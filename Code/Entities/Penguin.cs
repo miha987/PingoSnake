@@ -17,6 +17,8 @@ namespace PingoSnake.Code.Entities
 		private float JumpForce = -0.7f;
 		private float ForceY = 0f;
 
+		private const int FOOD_SCORE = 15 * 100;
+
 		public Penguin(Vector2 position) : base(position)
 		{
 			this.SetTexture("penguin");
@@ -117,18 +119,10 @@ namespace PingoSnake.Code.Entities
 			}
 		}
 
-		public void UpdateScore(GameTime gameTime)
-		{
-			double score = GameState.Instance.GetVar<double>("score");
-			score += gameTime.ElapsedGameTime.TotalMilliseconds;
-			GameState.Instance.SetVar<double>("score", score);
-		}
-
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
 
-			UpdateScore(gameTime);
 			CheckKeyboard(gameTime);
 			Move(gameTime);
 
@@ -139,6 +133,21 @@ namespace PingoSnake.Code.Entities
 				// Remove();
 				GameState.Instance.GetCurrentScene().Pause();
 				GameState.Instance.SetVar<bool>("game_over", true);
+			}
+
+			List<Entity> scoreCollisions = GetMyCollisionsWithTag("score");
+			if (scoreCollisions.Count > 0)
+            {
+				// add to score
+				double score = GameState.Instance.GetVar<double>("score");
+				score += FOOD_SCORE;
+				GameState.Instance.SetVar<double>("score", score);
+
+				// remove score entity
+				foreach(Entity e in scoreCollisions)
+                {
+					e.Remove();
+                }
 			}
 		}
 	}

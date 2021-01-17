@@ -40,20 +40,28 @@ namespace PingoSnake.Code.SpawnControllers
 
 			if (LastSpawnedEnemy == null || lastEnemyDistance >= MAX_ENEMY_DISTANCE || (lastEnemyDistance >= MIN_ENEMY_DISTANCE && spawnChance < SPAWN_RATE ))
 			{
+				Vector2 foodSpawnPoint = new Vector2(spawnPoint.X, spawnPoint.Y);
 				double walrusChance = this.SpawnRandom.NextDouble();
-
+				
 				if (walrusChance < WALRUS_RATE)
 				{
-					Walrus walrus = new Walrus(spawnPoint);
+					Walrus walrus = new Walrus(spawnPoint);	
 					GameState.Instance.GetCurrentScene().AddEntity(walrus);
 					LastSpawnedEnemy = walrus;
-				} else
+					foodSpawnPoint.Y -= 90;
+				}
+				else
 				{
-					spawnPoint.Y = spawnPoint.Y - 90;
+					spawnPoint.Y -= 90;
+					foodSpawnPoint.Y += 45;
 					Seagull seagull = new Seagull(spawnPoint);
 					GameState.Instance.GetCurrentScene().AddEntity(seagull);
 					LastSpawnedEnemy = seagull;
 				}
+
+				foodSpawnPoint.X += 50;
+				PenguinFood scoreEntity = new PenguinFood(foodSpawnPoint);
+				GameState.Instance.GetCurrentScene().AddEntity(scoreEntity);
 			}
 		}
 
