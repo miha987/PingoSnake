@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using PingoSnake.Code.Engine;
 using PingoSnake.Code.Entities;
 using PingoSnake.Code.GUI;
+using PingoSnake.Code.LoadingScreens;
 using PingoSnake.Code.SpawnControllers;
 using System;
 using System.Collections.Generic;
@@ -22,7 +24,7 @@ namespace PingoSnake.Code.Scenes
 			this.AddTexture("seagule2", newName: "seagull");
 			this.AddTexture("good_neighbors_32", newName: "spritefont32");
 			this.AddTexture("good_neighbors_64", newName: "spritefont64");
-			this.AddTexture("good_neighbors_128", newName: "spritefont128");
+			//this.AddTexture("good_neighbors_128", newName: "spritefont128");
 			this.AddTexture("snake_v2", newName: "snake");
 			this.AddTexture("snake_v3", newName: "snake3");
 			this.AddTexture("snake_v4", newName: "snake4");
@@ -32,7 +34,28 @@ namespace PingoSnake.Code.Scenes
 			this.AddTexture("food20", newName: "food");
 			//this.AddTexture("dirt_background", newName: "dirt_background");
 			this.AddTexture("dirt_background1", newName: "dirt_background");
+			this.AddTexture("divideLine1", newName: "divide_line");
 		}
+
+		public override void LoadSounds()
+		{
+			base.LoadSounds();
+
+			AddSong("mainTheme", "main_theme");
+			
+			AddSoundEffect("jump1", "jump");
+			AddSoundEffect("eat1", "eat");
+		}
+
+		public override LoadingScreen GetLoadingScreen(Scene scene)
+		{
+			return new MainLoadingScreen(scene);
+		}
+
+		/*public override LoadingScreen GetLoadingScreen()
+		{
+			return new MainLoadingScreen();
+		}*/
 
 		public override void Initialize()
 		{
@@ -52,7 +75,10 @@ namespace PingoSnake.Code.Scenes
 			SnakeBackground snakeBackground = new SnakeBackground(new Vector2(GetWindowWidth() / 2, 0));
 			AddEntity(snakeBackground);
 
-			Snake snake = new Snake(new Vector2(400, floor_pos_y - 128), new Vector2(GetWindowWidth()/2, 0), new Rectangle(0, 0, GetWindowWidth() / 2, GetWindowHeight()));
+			DivideLine divideLine = new DivideLine(new Vector2(GetWindowWidth() / 2 - 10, 0));
+			AddEntity(divideLine);
+
+			Snake snake = new Snake(new Vector2(400, floor_pos_y - 128), new Vector2(GetWindowWidth()/2 + 10, 0), new Rectangle(0, 0, (GetWindowWidth() / 2)-10, GetWindowHeight()));
 			AddEntity(snake);
 
 			GameGUI gameGUI = new GameGUI();
@@ -73,6 +99,8 @@ namespace PingoSnake.Code.Scenes
 
 			EnemySpawnController enemySpawnController = new EnemySpawnController();
 			AddSpawnController(enemySpawnController);
+
+			PlaySong("main_theme");
 		}
 
 		public void CheckKeyboard()
@@ -94,6 +122,7 @@ namespace PingoSnake.Code.Scenes
 
 			if (keyState.IsKeyDown(Keys.Escape) && !prevKeyState.IsKeyDown(Keys.Escape))
 			{
+				StopSong();
 				GameState.Instance.SetScene(new MainMenu());
 			}
 		}

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using PingoSnake.Code.Engine;
 using PingoSnake.Code.Entities;
 using PingoSnake.Code.GUI;
+using PingoSnake.Code.LoadingScreens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +22,7 @@ namespace PingoSnake.Code.Scenes
 			this.AddTexture("running_penguin_with_duck_1_cropped", newName: "penguin");
 			this.AddTexture("good_neighbors_32", newName: "spritefont32");
 			this.AddTexture("good_neighbors_64", newName: "spritefont64");
-			this.AddTexture("good_neighbors_128", newName: "spritefont128");
+			//this.AddTexture("good_neighbors_128", newName: "spritefont128");
 			this.AddTexture("snake_v2", newName: "snake");
 			this.AddTexture("snake_v3", newName: "snake3");
 			this.AddTexture("snake_v4", newName: "snake4");
@@ -28,6 +30,18 @@ namespace PingoSnake.Code.Scenes
 			this.AddTexture("snake_v6", newName: "snake6");
 			this.AddTexture("snake_v7", newName: "snake7");
 			this.AddTexture("food20", newName: "food");
+		}
+
+		public override void LoadSounds()
+		{
+			base.LoadSounds();
+
+			AddSoundEffect("menuSelect", "menu_select");
+		}
+
+		public override LoadingScreen GetLoadingScreen(Scene scene)
+		{
+			return new MainLoadingScreen(scene);
 		}
 
 		public override void Initialize()

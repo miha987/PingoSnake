@@ -48,8 +48,9 @@ namespace PingoSnake
 
 		public void SetScene(Scene scene)
 		{
-			this.CurrentScene = scene;
-			this.CurrentScene.Initialize();
+			CurrentScene = scene;
+			CurrentScene.SceneCreated();
+			//this.CurrentScene.Initialize();
 		}
 
 		public Scene GetCurrentScene()

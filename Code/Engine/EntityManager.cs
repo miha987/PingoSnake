@@ -180,6 +180,7 @@ namespace PingoSnake
 
 			// For entites that are dinamicly added, so that they dont lose one loop
 			foreach (Entity entity in this.EntitiesToAdd)
+
 			{
 				if (!paused || !entity.IsPausable())
 					entity.Update(gameTime);

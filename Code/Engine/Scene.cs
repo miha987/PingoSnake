@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using PingoSnake.Code.Engine;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PingoSnake
 {
@@ -11,7 +13,10 @@ namespace PingoSnake
 	{
 		private EntityManager EntityManager;
 		private TextureManager TextureManager;
+		private SoundManager SoundManager;
 		private SpawnManager SpawnManager;
+
+		private LoadingScreen SceneLoadingScreen;
 
 		private Rectangle SceneBounds;
 
@@ -19,42 +24,69 @@ namespace PingoSnake
 
 		private bool Paused;
 
+		private bool SceneLoaded;
+
 		public Scene()
 		{
-			this.SceneBounds = new Rectangle(0, 0, this.GetWindowWidth(), this.GetWindowHeight());
-			this.TextureManager = new TextureManager();
-			this.SpawnManager = new SpawnManager();
-			this.EntityManager = new EntityManager(this);
-			this.Camera = new Camera();
+			SceneBounds = new Rectangle(0, 0, GetWindowWidth(), GetWindowHeight());
+			TextureManager = new TextureManager();
+			SoundManager = new SoundManager();
+			SpawnManager = new SpawnManager();
+			EntityManager = new EntityManager(this);
+			Camera = new Camera();
 
-			this.Paused = false;
+			Paused = false;
+			SceneLoaded = false;
 
-			this.Camera.Initialize(this.GetWindowWidth(), this.GetWindowHeight());
+			Camera.Initialize(GetWindowWidth(), GetWindowHeight());
 
-			this.EntityManager.SetCamera(this.Camera);
+			EntityManager.SetCamera(Camera);
 
-			this.LoadTextures();
+			SceneLoadingScreen = GetLoadingScreen(this);
+			SceneLoadingScreen.LoadTextures();
+
+			Task.Run(() => LoadSceneContent());
 		}
 
 		public Scene(Rectangle sceneBounds)
 		{
-			this.SceneBounds = sceneBounds;
+			SceneBounds = sceneBounds;
 
-			if (this.SceneBounds.IsEmpty)
+			if (SceneBounds.IsEmpty)
 			{
-				this.SceneBounds = new Rectangle(0, 0, this.GetWindowWidth(), this.GetWindowHeight());
+				SceneBounds = new Rectangle(0, 0, GetWindowWidth(), GetWindowHeight());
 			}
 
-			this.TextureManager = new TextureManager();
-			this.SpawnManager = new SpawnManager();
-			this.EntityManager = new EntityManager(this);
-			this.Camera = new Camera();
+			TextureManager = new TextureManager();
+			SoundManager = new SoundManager();
+			SpawnManager = new SpawnManager();
+			EntityManager = new EntityManager(this);
+			Camera = new Camera();
 
-			this.Camera.Initialize(this.GetWindowWidth(), this.GetWindowHeight());
+			Paused = false;
+			SceneLoaded = false;
+
+			Camera.Initialize(GetWindowWidth(), GetWindowHeight());
 			
-			this.EntityManager.SetCamera(this.Camera);
+			EntityManager.SetCamera(Camera);
 
-			this.LoadTextures();
+			SceneLoadingScreen = GetLoadingScreen(this);
+			SceneLoadingScreen.LoadTextures();
+
+			Task.Run(() => LoadSceneContent());
+		}
+
+		public virtual LoadingScreen GetLoadingScreen(Scene scene)
+		{
+			return new LoadingScreen(scene);
+		}
+
+		async public Task LoadSceneContent()
+		{
+			LoadTextures();
+			LoadSounds();
+			Initialize();
+			SceneLoaded = true;
 		}
 
 		public virtual void LoadTextures()
@@ -62,8 +94,21 @@ namespace PingoSnake
 
 		}
 
+		public virtual void LoadSounds()
+		{
+
+		}
+
 		public virtual void Initialize()
 		{
+		}
+
+		public virtual void SceneCreated()
+		{
+			if (SceneLoadingScreen != null)
+			{
+				SceneLoadingScreen.Initialize();
+			}
 		}
 
 		public void LoadContent()
@@ -79,6 +124,31 @@ namespace PingoSnake
 		public void AddTexture(string name, string newName=null)
 		{
 			this.TextureManager.AddTexture(name, newName);
+		}
+
+		public void AddSong(string name, string newName = null)
+		{
+			SoundManager.AddSong(name, newName);
+		}
+
+		public void AddSoundEffect(string name, string newName = null)
+		{
+			SoundManager.AddSoundEffect(name, newName);
+		}
+
+		public void PlaySong(string name, bool isRepeating = true)
+		{
+			SoundManager.PlaySong(name, isRepeating);
+		}
+
+		public void StopSong()
+		{
+			SoundManager.StopSong();
+		}
+
+		public void PlaySoundEffect(string name, bool isRepeating = false)
+		{
+			SoundManager.PlaySoundEffect(name, isRepeating);
 		}
 
 		public void AddSpawnController(SpawnController spawnController)
@@ -133,15 +203,28 @@ namespace PingoSnake
 
 		public virtual void Update(GameTime gameTime)
 		{
-			this.EntityManager.Update(gameTime, Paused);
-			this.SpawnManager.Update(gameTime);
+			if (SceneLoaded)
+			{
+				this.EntityManager.Update(gameTime, Paused);
+				this.SpawnManager.Update(gameTime);
 
-			this.Camera.Update(gameTime);
+				this.Camera.Update(gameTime);
+			}
+			else if (SceneLoadingScreen != null)
+			{
+				SceneLoadingScreen.Update(gameTime);
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			this.EntityManager.Draw(spriteBatch);
+			if (SceneLoaded)
+			{
+				this.EntityManager.Draw(spriteBatch);
+			} else if (SceneLoadingScreen != null)
+			{
+				SceneLoadingScreen.Draw(spriteBatch);
+			}
 		}
 	}
 }

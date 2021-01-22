@@ -83,6 +83,7 @@ namespace PingoSnake.Code.Entities
 				this.Jumping = true;
 				this.ForceY = this.JumpForce;
 				this.SetAnimation("penguin_jumping");
+				GameState.Instance.GetCurrentScene().PlaySoundEffect("jump");
 			}
 		}
 

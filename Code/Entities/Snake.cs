@@ -64,6 +64,8 @@ namespace PingoSnake.Code.Entities
 			int fX = FoodRandomizer.Next(offsetX, FieldBounds.Width - offsetX) + (int)FieldOffset.X;
 			int fY = FoodRandomizer.Next(offsetY, FieldBounds.Height - offsetY) + (int)FieldOffset.Y;
 
+			Trace.WriteLine($"FOOD: {fX}, {fY}");
+
 			CurrentFood = new Food(new Vector2(fX, fY));
 			GameState.Instance.GetCurrentScene().AddEntity(CurrentFood);
 		}
@@ -212,6 +214,8 @@ namespace PingoSnake.Code.Entities
 				double score = GameState.Instance.GetVar<double>("score");
 				score += FOOD_SCORE;
 				GameState.Instance.SetVar<double>("score", score);
+
+				GameState.Instance.GetCurrentScene().PlaySoundEffect("eat");
 			}
 
 			if (headRectangle.Top < FieldBounds.Y || headRectangle.Bottom > FieldBounds.Height || headRectangle.Left < FieldBounds.X || headRectangle.Right > FieldBounds.Width)

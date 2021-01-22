@@ -38,30 +38,23 @@ namespace PingoSnake.Code.GUI
 			KeyboardState keyState = Keyboard.GetState();
 			KeyboardState prevKeyState = GameState.Instance.GetPrevKeyboardState();
 
-			if (keyState.IsKeyDown(Keys.Up) && !prevKeyState.IsKeyDown(Keys.Up))
+			if ((keyState.IsKeyDown(Keys.Up) && !prevKeyState.IsKeyDown(Keys.Up)) || (keyState.IsKeyDown(Keys.W) && !prevKeyState.IsKeyDown(Keys.W)))
 			{
 				if (CurrentOption > 0)
+				{
 					CurrentOption -= 1;
+					GameState.Instance.GetCurrentScene().PlaySoundEffect("menu_select");
+				}
 			}
 
-			if (keyState.IsKeyDown(Keys.Down) && !prevKeyState.IsKeyDown(Keys.Down))
+			if ((keyState.IsKeyDown(Keys.Down) && !prevKeyState.IsKeyDown(Keys.Down)) || (keyState.IsKeyDown(Keys.S) && !prevKeyState.IsKeyDown(Keys.S)))
 			{
 				if (CurrentOption < Options.Length-1)
+				{
 					CurrentOption += 1;
+					GameState.Instance.GetCurrentScene().PlaySoundEffect("menu_select");
+				}
 			}
-
-			if (keyState.IsKeyDown(Keys.W) && !prevKeyState.IsKeyDown(Keys.W))
-			{
-				if (CurrentOption > 0)
-					CurrentOption -= 1;
-			}
-
-			if (keyState.IsKeyDown(Keys.S) && !prevKeyState.IsKeyDown(Keys.S))
-			{
-				if (CurrentOption < Options.Length - 1)
-					CurrentOption += 1;
-			}
-
 			
 			if (keyState.IsKeyDown(Keys.Enter) && !prevKeyState.IsKeyDown(Keys.Enter))
 			{
