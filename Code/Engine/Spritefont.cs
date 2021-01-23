@@ -60,6 +60,11 @@ namespace PingoSnake.Code.Engine
 			DrawText(spriteBatch, text, x, y, Color.White, spacing);
 		}
 
+		public void DrawText(SpriteBatch spriteBatch, string text, Vector2 position, int spacing = 2)
+		{
+			DrawText(spriteBatch, text, (int) position.X, (int) position.Y, Color.White, spacing);
+		}
+
 		public void DrawText(SpriteBatch spriteBatch, string text, int x, int y, Color color, int spacing = 2)
 		{
 			for (int i = 0; i < text.Length; i++)

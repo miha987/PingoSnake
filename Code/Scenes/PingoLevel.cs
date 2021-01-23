@@ -41,7 +41,10 @@ namespace PingoSnake.Code.Scenes
 		{
 			base.LoadSounds();
 
-			AddSoundEffect("jump1", "jump");
+			foreach(KeyValuePair<string, string> soundEffect in Penguin.requestedSoundEffects())
+            {
+				AddSoundEffect(soundEffect.Key, soundEffect.Value);
+            }
 		}
 
 		public override LoadingScreen GetLoadingScreen(Scene scene)

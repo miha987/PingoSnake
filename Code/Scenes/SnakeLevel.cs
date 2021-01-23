@@ -42,6 +42,7 @@ namespace PingoSnake.Code.Scenes
 			base.LoadSounds();
 
 			AddSoundEffect("eat1", "eat");
+			AddSoundEffect("dizzy", "dizzy");
 		}
 
 		public override LoadingScreen GetLoadingScreen(Scene scene)

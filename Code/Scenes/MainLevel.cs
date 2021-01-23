@@ -42,9 +42,13 @@ namespace PingoSnake.Code.Scenes
 			base.LoadSounds();
 
 			AddSong("mainTheme", "main_theme");
-			
-			AddSoundEffect("jump1", "jump");
+
+			foreach (KeyValuePair<string, string> soundEffect in Penguin.requestedSoundEffects())
+			{
+				AddSoundEffect(soundEffect.Key, soundEffect.Value);
+			}
 			AddSoundEffect("eat1", "eat");
+			AddSoundEffect("dizzy", "dizzy");
 		}
 
 		public override LoadingScreen GetLoadingScreen(Scene scene)

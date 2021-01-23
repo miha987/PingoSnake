@@ -61,6 +61,30 @@
 /processorParam:TextureFormat=Color
 /build:divideLine1.png
 
+#begin dizzy.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:dizzy.wav
+
+#begin duck1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:duck1.wav
+
+#begin duck2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:duck2.wav
+
+#begin duck3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:duck3.wav
+
 #begin eat1.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -180,6 +204,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:jump1.wav
+
+#begin jump2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:jump2.wav
 
 #begin loading.png
 /importer:TextureImporter

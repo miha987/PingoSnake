@@ -50,6 +50,22 @@ namespace PingoSnake.Code.Entities
 			this.SetAnimation("penguin_running");
 		}
 
+		public static string[] requestedTextures()
+        {
+			return new string[]
+			{
+
+			};
+        }
+
+		public static Dictionary<string, string> requestedSoundEffects()
+        {
+			Dictionary<string, string> d = new Dictionary<string, string>();
+			d.Add("jump2", "jump");
+			d.Add("duck3", "duck");
+			return d;
+        }
+
 		public override void Initialize()
 		{
 			base.Initialize();
@@ -68,6 +84,7 @@ namespace PingoSnake.Code.Entities
 				this.Ducking = true;
 				this.SetAnimation("penguin_running_ducked");
 				SetBoundingRectangle(new Rectangle(40, GetHeight() / 2, GetWidth() -40, (GetHeight() / 2) - 15 ));
+				GameState.Instance.GetCurrentScene().PlaySoundEffect("duck");
 			}
 
 			if (!keyState.IsKeyDown(Keys.S) && prevKeyState.IsKeyDown(Keys.S))

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using PingoSnake.Code.Spritefonts;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,15 +17,26 @@ namespace PingoSnake.Code.Entities
 		private const int INITIAL_LENGTH = 4;
 		private const int HEIGHT = 48;
 		private const int FOOD_SCORE = 20 * 100;
+		private const int DIZZY_TIME_MILLIS = 500; // half-a-second
+		private const int DIZZY_WARMUP_MILLIS = 10 * 1000; // game time before snake can get dizzy
+		private const int DIZZY_COOLDOWN_MILLIS = 5 * 1000; // when dizzy starts, subtract from keyTotal times
 
 		private Vector2 FieldOffset;
 		private Rectangle FieldBounds;
+
+		private MyFont32 myFont32;
 
 		private SnakePart Head;
 		private List<SnakePart> SnakeParts;
 		private LinkedList<Vector2> MovementPath;
 
 		private Food CurrentFood;
+
+		private double spawnTimeMillis = 0;
+		private double keyLeftTimeTotal;
+		private double keyRightTimeTotal;
+		private Boolean isDizzy = false;
+		private double dizzyStartTime = 0;
 
 		Random FoodRandomizer;
 
@@ -33,6 +45,7 @@ namespace PingoSnake.Code.Entities
 			SetTexture("snake5");
 			SetZ(55);
 			LoadContent();
+			myFont32 = new MyFont32();
 
 			FieldOffset = fieldOffset;
 			FieldBounds = fieldBounds;
@@ -182,19 +195,50 @@ namespace PingoSnake.Code.Entities
 
 		public void CheckKeyboard(GameTime gameTime)
 		{
+			if (spawnTimeMillis == 0)
+            {
+				spawnTimeMillis = gameTime.TotalGameTime.TotalMilliseconds;
+            }
+
+			if (isDizzy && (gameTime.TotalGameTime.TotalMilliseconds - dizzyStartTime > DIZZY_TIME_MILLIS))
+            {
+				isDizzy = false;
+            }
+
 			KeyboardState keyState = Keyboard.GetState();
 			//KeyboardState prevKeyState = GameState.Instance.GetPrevKeyboardState();
 
-
-			if (keyState.IsKeyDown(Keys.Left))
+			// lose control if snake dizzy
+			if (!isDizzy) 
 			{
-				Head.Rotation -= ROTATION_SPEED;
-			}
+				if (keyState.IsKeyDown(Keys.Left))
+				{
+					keyLeftTimeTotal += gameTime.ElapsedGameTime.TotalMilliseconds;
+					Head.Rotation -= ROTATION_SPEED;
+				}
 
-			if (keyState.IsKeyDown(Keys.Right))
-			{
-				Head.Rotation += ROTATION_SPEED;
+				if (keyState.IsKeyDown(Keys.Right))
+				{
+					keyRightTimeTotal += gameTime.ElapsedGameTime.TotalMilliseconds;
+					Head.Rotation += ROTATION_SPEED;
+				}
 			}
+			
+
+			double keyLeftTimeRatio = keyLeftTimeTotal / (double) (gameTime.TotalGameTime.TotalMilliseconds - spawnTimeMillis);
+			double keyRightTimeRatio = keyRightTimeTotal / (double) (gameTime.TotalGameTime.TotalMilliseconds - spawnTimeMillis);
+			
+			if (gameTime.TotalGameTime.TotalMilliseconds - spawnTimeMillis > DIZZY_WARMUP_MILLIS)
+            {
+				if ((keyLeftTimeRatio > 0.5 || keyRightTimeRatio > 0.5) && isDizzy == false)
+                {
+					GameState.Instance.GetCurrentScene().PlaySoundEffect("dizzy");
+					isDizzy = true;
+					keyLeftTimeTotal -= DIZZY_COOLDOWN_MILLIS;
+					keyRightTimeTotal -= DIZZY_COOLDOWN_MILLIS;
+					dizzyStartTime = gameTime.TotalGameTime.TotalMilliseconds;
+                }
+            }
 		}
 
 		public void CheckCollisions() 
@@ -252,6 +296,12 @@ namespace PingoSnake.Code.Entities
 			{
 				snakePart.Draw(spriteBatch, GetTexture(), FieldOffset);
 			}
+
+			if (isDizzy)
+            {
+				myFont32.DrawText(spriteBatch, "Dizzy!", SnakeParts[0].X, SnakeParts[0].Y + 20);
+			}
+			
 		}
 	}
 
